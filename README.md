@@ -87,11 +87,11 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
   - [x] validation
     - [x] post 404 에러 처리
     - [x] user 403 에러 처리
-- [ ] 게시글 수정
-  - [ ] validation
-    - [ ] title / content string empty 에러 처리
-    - [ ] post 404 에러 처리
-    - [ ] user 403 에러 처리
+- [x] 게시글 수정
+  - [x] validation
+    - [x] title / content string empty 에러 처리
+    - [x] post 404 에러 처리
+    - [x] user 403 에러 처리
 
 ## 실행 방법
 
