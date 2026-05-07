@@ -13,11 +13,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  toEntity(): User {
+  toEntity(password: string): User {
     return new User({
       name: this.name,
       email: this.email,
-      password: this.password,
+      password: password,
     });
   }
 }
