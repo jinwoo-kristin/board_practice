@@ -9,6 +9,7 @@ import {
 @Entity()
 export class User {
   constructor(partial?: Partial<User>) {
+    // todo 생성자 오버라이딩 방법
     Object.assign(this, partial);
   }
 

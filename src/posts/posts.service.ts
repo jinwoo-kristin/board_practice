@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
@@ -29,6 +33,17 @@ export class PostsService {
     return PostResponseDto.from(saved);
   }
 
+  async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
+    const { page, limit } = query;
+    const [posts, total] = await this.postsRepository.findAndCount({
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+    return new PostListResponseDto(posts.map(PostResponseDto.from), total);
+  }
+
   @Transactional()
   async delete(id: number, userId: number): Promise<void> {
     const post = await this.postsRepository.findOne({
@@ -39,16 +54,5 @@ export class PostsService {
     if (post.user.id !== userId)
       throw new ForbiddenException('게시글을 삭제할 권한이 없습니다.');
     await this.postsRepository.delete(id);
-  }
-
-  async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
-    const { page, limit } = query;
-    const [posts, total] = await this.postsRepository.findAndCount({
-      relations: ['user'],
-      order: { created_at: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-    return new PostListResponseDto(posts.map(PostResponseDto.from), total);
   }
 }

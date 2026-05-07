@@ -3,27 +3,41 @@ import { User } from '../user.entity';
 
 export class UserResponseDto {
   @ApiProperty({ description: '유저 ID' })
-  id: number;
+  readonly id: number;
 
   @ApiProperty({ description: '이름' })
-  name: string;
+  readonly name: string;
 
   @ApiProperty({ description: '이메일' })
-  email: string;
+  readonly email: string;
 
   @ApiProperty({ description: '생성일' })
-  created_at: Date;
+  readonly created_at: Date;
 
   @ApiProperty({ description: '수정일' })
-  updated_at: Date;
+  readonly updated_at: Date;
+
+  private constructor(
+    id: number,
+    name: string,
+    email: string,
+    created_at: Date,
+    updated_at: Date,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.created_at = created_at;
+    this.updated_at = updated_at;
+  }
 
   static from(user: User): UserResponseDto {
-    return Object.assign(new UserResponseDto(), {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    });
+    return new UserResponseDto(
+      user.id,
+      user.name,
+      user.email,
+      user.created_at,
+      user.updated_at,
+    );
   }
 }
