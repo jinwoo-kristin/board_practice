@@ -61,6 +61,16 @@ src/
 - `update-*.dto.ts`: 동일 필드에 `@IsOptional()` 추가 (PartialType 미사용)
 - 쿼리 파라미터 숫자 변환: `@Type(() => Number)` + ValidationPipe `transform: true`
 
+### 메서드 배치 규칙
+Controller·Service의 public 메서드는 **C-R-U-D 순서**로 배치한다.
+
+- Read 그룹 안에 단건/목록 조회 등 여러 개가 있을 수 있다 (그룹 내 순서는 자유)
+- 도메인 특화 메서드는 의미상 가까운 CRUD에 묶거나 D 뒤에 별도 그룹화
+
+Private 헬퍼 메서드는 **호출하는 public 메서드 바로 아래**에 둔다.
+- 여러 public이 같은 private을 공유하면 **처음 호출하는(=위쪽) public 바로 아래**
+- 결과적으로 "public + 그 private들"이 한 그룹을 이루고, 그룹들이 CRUD 순서로 배치됨
+
 ### DB 설정
 - 개발: `db.sqlite` 파일, `synchronize: true`
 - 테스트: `:memory:` SQLite 인메모리
