@@ -6,6 +6,8 @@ import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostResponseDto } from './dto/post-response.dto';
+import { PostsQueryDto } from './dto/posts-query.dto';
+import { PostListResponseDto } from './dto/posts-list-response.dto';
 
 @Injectable()
 export class PostsService {
@@ -15,6 +17,17 @@ export class PostsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
+
+  async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
+    const { page, limit } = query;
+    const [posts, total] = await this.postsRepository.findAndCount({
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+    return new PostListResponseDto(posts.map(PostResponseDto.from), total);
+  }
 
   @Transactional()
   async create(dto: CreatePostDto): Promise<PostResponseDto> {

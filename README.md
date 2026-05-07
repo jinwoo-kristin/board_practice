@@ -71,12 +71,13 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 | Method | Endpoint | 설명 |
 |--------|----------|------|
 | POST | /posts | 게시글 생성 |
+| GET | /posts?page=1&limit=10  | 게시글 조회 |
 
 - [x] 게시글 생성
   - [x] validation
     - [x] title / content string empty 에러 처리
     - [x] user 404 에러 처리
-- [ ] 게시글 조회
+- [x] 게시글 페이지네이션 조회
 - [ ] 게시글 삭제
 - [ ] 게시글 수정
 

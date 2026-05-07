@@ -5,6 +5,7 @@ import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { PostsQueryDto } from './dto/posts-query.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 
 describe('PostsService', () => {
@@ -55,6 +56,49 @@ describe('PostsService', () => {
       await expect(postsService.create(postDto)).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('findAll', () => {
+    it('게시글 목록과 전체 개수를 반환한다', async () => {
+      // given
+      const userDto = Object.assign(new CreateUserDto(), {
+        name: 'jinwoo',
+        email: 'test@test.com',
+        password: 'password123',
+      });
+      const createdUser = await usersService.create(userDto);
+
+      for (let i = 1; i <= 3; i++) {
+        await postsService.create(
+          Object.assign(new CreatePostDto(), {
+            title: `제목${i}`,
+            content: `내용${i}`,
+            userId: createdUser.id,
+          }),
+        );
+      }
+
+      const query = Object.assign(new PostsQueryDto(), { page: 1, limit: 2 });
+
+      // when
+      const result = await postsService.findAll(query);
+
+      // then
+      expect(result.total).toBe(3);
+      expect(result.items).toHaveLength(2);
+    });
+
+    it('게시글이 없으면 빈 배열과 total 0을 반환한다', async () => {
+      // given
+      const query = Object.assign(new PostsQueryDto(), { page: 1, limit: 10 });
+
+      // when
+      const result = await postsService.findAll(query);
+
+      // then
+      expect(result.total).toBe(0);
+      expect(result.items).toHaveLength(0);
     });
   });
 });
