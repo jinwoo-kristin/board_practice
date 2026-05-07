@@ -41,7 +41,7 @@ export class PostsService {
       take: limit,
       skip: (page - 1) * limit,
     });
-    return new PostListResponseDto(posts.map(PostResponseDto.from), total);
+    return PostListResponseDto.from(posts, total);
   }
 
   @Transactional()

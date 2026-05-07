@@ -24,7 +24,10 @@ export class UsersService {
 
   async findOne(id: number): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('해당 유저가 존재하지 않습니다.');
+    if (!user) {
+      throw new NotFoundException('해당 유저가 존재하지 않습니다.');
+    }
+
     return UserResponseDto.from(user);
   }
 }

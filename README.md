@@ -23,6 +23,9 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 
 - [x] SQLLite DB 사용
 - [x] TypeORM 기반 데이터베이스 연동
+- [x] 테스트 코드 테이블 격리
+    - beforeEach : 테이블 모든 데이터 삭제
+    - afterAll : 컨테이너 정리
 
 ## Phase 2. 기능 구현
 
