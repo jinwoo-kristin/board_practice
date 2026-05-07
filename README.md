@@ -32,7 +32,7 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
 | id | number | PK, Auto Increment |
-| username | string | 사용자명 |
+| name | string | 사용자명 |
 | email | string | 이메일 (unique) |
 | createdAt | Date | 생성일 |
 | updatedAt | Date | 수정일 |
