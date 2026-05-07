@@ -47,7 +47,6 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 | createdAt | Date | 생성일 |
 | updatedAt | Date | 수정일 |
 
-
 ### API 엔드포인트
 
 #### 유저 (User)
@@ -61,7 +60,7 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 
 - [x] 유저 생성
   - [x]  validation
-      - [x]  email / name / password
+      - [x] email / name / password string empty 에러 처리
   - [x]  password 암호화 후 DB 저장
 - [x] 유저 조회
   - [x] validation
@@ -71,7 +70,15 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 
 | Method | Endpoint | 설명 |
 |--------|----------|------|
-| GET | /boards/:boardId/posts | 게시글 목록 (페이지네이션 + 검색) |
+| POST | /posts | 게시글 생성 |
+
+- [x] 게시글 생성
+  - [x] validation
+    - [x] title / content string empty 에러 처리
+    - [x] user 404 에러 처리
+- [ ] 게시글 조회
+- [ ] 게시글 삭제
+- [ ] 게시글 수정
 
 ---
 

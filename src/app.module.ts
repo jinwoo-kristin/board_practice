@@ -5,7 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { User } from './users/user.entity';
+import { Post } from './posts/post.entity';
 import { UsersModule } from './users/users.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { UsersModule } from './users/users.module';
         return {
           type: 'sqlite',
           database: 'board.sqlite',
-          entities: [User],
+          entities: [User, Post],
           synchronize: true,
           logging: true,
           dropSchema: true,
@@ -28,6 +30,7 @@ import { UsersModule } from './users/users.module';
       },
     }),
     UsersModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

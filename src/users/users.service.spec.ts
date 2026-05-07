@@ -1,59 +1,15 @@
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import {
-  addTransactionalDataSource,
-  initializeTransactionalContext,
-} from 'typeorm-transactional';
+import { setupTestModule } from '../test-utils/setup-test-module';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
 describe('UsersService', () => {
+  const getModule = setupTestModule([User], [UsersService]);
   let service: UsersService;
-  let module: TestingModule;
-  let dataSource: DataSource;
 
-  beforeAll(async () => {
-    initializeTransactionalContext();
-
-    module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRootAsync({
-          useFactory() {
-            return {
-              type: 'sqlite',
-              database: ':memory:',
-              entities: [User],
-              synchronize: true,
-              dropSchema: true,
-            };
-          },
-          dataSourceFactory(options) {
-            if (!options) throw new Error('Invalid TypeORM options');
-            return Promise.resolve(
-              addTransactionalDataSource(new DataSource(options)),
-            );
-          },
-        }),
-        TypeOrmModule.forFeature([User]),
-      ],
-      providers: [UsersService],
-    }).compile();
-
-    service = module.get<UsersService>(UsersService);
-    dataSource = module.get<DataSource>(DataSource);
-  });
-
-  beforeEach(async () => {
-    for (const entity of dataSource.entityMetadatas) {
-      await dataSource.getRepository(entity.name).clear();
-    }
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(() => {
+    service = getModule().get<UsersService>(UsersService);
   });
 
   describe('create', () => {
