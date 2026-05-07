@@ -1,8 +1,9 @@
-import { NotFoundException } from '@nestjs/common';
 import { setupTestModule } from '../test-utils/setup-test-module';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { BoardException } from '../common/exceptions/board.exception';
+import { ErrorCode } from '../common/exceptions/error-code';
 
 describe('UsersService', () => {
   const getModule = setupTestModule([User], [UsersService]);
@@ -50,9 +51,12 @@ describe('UsersService', () => {
       expect(result.email).toBe(dto.email);
     });
 
-    it('존재하지 않는 id로 조회하면 NotFoundException이 발생한다', async () => {
+    it('존재하지 않는 id로 조회하면 BoardException(USER_NOT_FOUND)이 발생한다', async () => {
       // when & then
-      await expect(service.findOne(-1)).rejects.toThrow(NotFoundException);
+      await expect(service.findOne(-1)).rejects.toThrow(BoardException);
+      await expect(service.findOne(-1)).rejects.toMatchObject({
+        errorCode: ErrorCode.USER_NOT_FOUND,
+      });
     });
   });
 });

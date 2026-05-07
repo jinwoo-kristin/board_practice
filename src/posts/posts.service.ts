@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
@@ -13,6 +9,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostResponseDto } from './dto/post-response.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
 import { PostListResponseDto } from './dto/posts-list-response.dto';
+import { BoardException } from '../common/exceptions/board.exception';
+import { ErrorCode } from '../common/exceptions/error-code';
 
 @Injectable()
 export class PostsService {
@@ -26,8 +24,8 @@ export class PostsService {
   @Transactional()
   async create(dto: CreatePostDto): Promise<PostResponseDto> {
     const user = await this.findUser(dto.userId);
-
     const post = dto.toEntity(user);
+    
     const saved = await this.postsRepository.save(post);
     return PostResponseDto.from(saved);
   }
@@ -36,17 +34,16 @@ export class PostsService {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
     });
-    if (!user) throw new NotFoundException('해당 유저가 존재하지 않습니다.');
+    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND);
     return user;
   }
 
   async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
-    const { page, limit } = query;
     const [posts, total] = await this.postsRepository.findAndCount({
       relations: ['user'],
       order: { created_at: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: query.limit,
+      skip: (query.page - 1) * query.limit,
     });
     return PostListResponseDto.from(posts, total);
   }
@@ -66,13 +63,13 @@ export class PostsService {
       where: { id },
       relations: ['user'],
     });
-    if (!post) throw new NotFoundException('해당 게시글이 존재하지 않습니다.');
+    if (!post) throw new BoardException(ErrorCode.POST_NOT_FOUND);
     return post;
   }
 
   private validateUserPost(userId: number, post: Post) {
     if (post.user.id !== userId) {
-      throw new ForbiddenException('게시글에 접근할 권한이 없습니다.');
+      throw new BoardException(ErrorCode.POST_FORBIDDEN);
     }
   }
 

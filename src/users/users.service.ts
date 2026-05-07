@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -6,6 +6,8 @@ import { Transactional } from 'typeorm-transactional';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { BoardException } from '../common/exceptions/board.exception';
+import { ErrorCode } from '../common/exceptions/error-code';
 
 @Injectable()
 export class UsersService {
@@ -29,7 +31,7 @@ export class UsersService {
 
   private async findUser(id:number): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('해당 유저가 존재하지 않습니다.');
+    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND);
     return user;
   }
 }
