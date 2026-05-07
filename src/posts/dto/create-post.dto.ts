@@ -16,7 +16,7 @@ export class CreatePostDto {
 
   @IsInt()
   @ApiProperty({ description: '작성자 ID' })
-  userId: number; // todo userId 사용하지 않는 방향 고민
+  userId: number; // todo 추후 token 사용
 
   toEntity(user: User): Post {
     return new Post({ title: this.title, content: this.content, user });
