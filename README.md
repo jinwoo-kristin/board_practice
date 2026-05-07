@@ -63,6 +63,9 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
   - [x]  validation
       - [x]  email / name / password
   - [x]  password 암호화 후 DB 저장
+- [x] 유저 조회
+  - [x] validation
+    - [x] 404 에러
 
 #### 게시글 (Post)
 

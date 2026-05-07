@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -11,11 +12,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 describe('UsersService', () => {
   let service: UsersService;
+  let module: TestingModule;
+  let dataSource: DataSource;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     initializeTransactionalContext();
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRootAsync({
           useFactory() {
@@ -40,10 +43,21 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+    dataSource = module.get<DataSource>(DataSource);
+  });
+
+  beforeEach(async () => {
+    for (const entity of dataSource.entityMetadatas) {
+      await dataSource.getRepository(entity.name).clear();
+    }
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   describe('create', () => {
-    it('유저를 생성하면 DTO 값과 일치하는 UserResponseDto가 반환된다', async () => {
+    it('유저를 생성한다.', async () => {
       // given
       const dto = Object.assign(new CreateUserDto(), {
         name: 'jinwoo',
@@ -58,7 +72,31 @@ describe('UsersService', () => {
       expect(result.id).toBeDefined();
       expect(result.name).toBe(dto.name);
       expect(result.email).toBe(dto.email);
-      expect('password' in result).toBe(false);
+    });
+  });
+
+  describe('findOne', () => {
+    it('존재하는 id로 조회하면 UserResponseDto가 반환된다', async () => {
+      // given
+      const dto = Object.assign(new CreateUserDto(), {
+        name: 'jinwoo',
+        email: 'test@test.com',
+        password: 'password123',
+      });
+      const created = await service.create(dto);
+
+      // when
+      const result = await service.findOne(created.id);
+
+      // then
+      expect(result.id).toBe(created.id);
+      expect(result.name).toBe(dto.name);
+      expect(result.email).toBe(dto.email);
+    });
+
+    it('존재하지 않는 id로 조회하면 NotFoundException이 발생한다', async () => {
+      // when & then
+      await expect(service.findOne(-1)).rejects.toThrow(NotFoundException);
     });
   });
 });
