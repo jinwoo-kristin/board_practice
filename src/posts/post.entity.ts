@@ -1,16 +1,11 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { User } from '../users/user.entity';
+import { BaseTimeEntity } from '../common/entities/base-time.entity';
 
 @Entity()
-export class Post {
+export class Post extends BaseTimeEntity {
   constructor(partial?: Partial<Post>) {
+    super();
     Object.assign(this, partial);
   }
 
@@ -25,12 +20,6 @@ export class Post {
 
   @ManyToOne(() => User)
   user: User;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 
   update(title: string, content: string): void {
     this.title = title;

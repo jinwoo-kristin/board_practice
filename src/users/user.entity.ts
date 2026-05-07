@@ -1,15 +1,11 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseTimeEntity } from '../common/entities/base-time.entity';
 
 @Entity()
-export class User {
+export class User extends BaseTimeEntity {
   constructor(partial?: Partial<User>) {
     // todo 생성자 오버라이딩 방법
+    super();
     Object.assign(this, partial);
   }
 
@@ -24,10 +20,4 @@ export class User {
 
   @Column({ select: false })
   password: string;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }
