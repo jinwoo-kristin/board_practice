@@ -74,8 +74,9 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 | Method | Endpoint | 설명 |
 |--------|----------|------|
 | POST | /posts | 게시글 생성 |
-| GET | /posts?page=1&limit=10  | 게시글 조회 |
+| GET | /posts?page=:page&limit=:limit | 게시글 조회 |
 | DELETE | /posts/:id  | 게시글 삭제 |
+| PUT | /posts/:id  | 게시글 수정 |
 
 - [x] 게시글 생성
   - [x] validation
@@ -87,8 +88,10 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
     - [x] post 404 에러 처리
     - [x] user 403 에러 처리
 - [ ] 게시글 수정
-
----
+  - [ ] validation
+    - [ ] title / content string empty 에러 처리
+    - [ ] post 404 에러 처리
+    - [ ] user 403 에러 처리
 
 ## 실행 방법
 
@@ -102,4 +105,7 @@ pnpm start:dev
 # 프로덕션 빌드 및 실행
 pnpm build
 pnpm start:prod
+
+# 테스트
+pnpm test
 ```

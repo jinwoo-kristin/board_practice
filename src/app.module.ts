@@ -17,7 +17,7 @@ import { PostsModule } from './posts/posts.module';
           entities: [User, Post],
           synchronize: true,
           logging: true,
-          dropSchema: true,
+          dropSchema: true, // test mode
         };
       },
       dataSourceFactory(options) {

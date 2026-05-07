@@ -1,6 +1,17 @@
-import { Controller, Post, Get, Delete, Body, Query, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Query,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
 
 @Controller('posts')
@@ -15,6 +26,11 @@ export class PostsController {
   @Get()
   findAll(@Query() query: PostsQueryDto) {
     return this.postsService.findAll(query);
+  }
+
+  @Put(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
+    return this.postsService.update(id, dto);
   }
 
   @Delete(':id')

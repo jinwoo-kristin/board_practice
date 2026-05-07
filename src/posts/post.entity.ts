@@ -31,4 +31,9 @@ export class Post {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  update(title: string, content: string): void {
+    this.title = title;
+    this.content = content;
+  }
 }

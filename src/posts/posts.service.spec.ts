@@ -5,6 +5,7 @@ import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 
@@ -59,6 +60,82 @@ describe('PostsService', () => {
     });
   });
 
+  describe('update', () => {
+    it('게시글을 수정한다.', async () => {
+      // given
+      const user = await usersService.create(
+        Object.assign(new CreateUserDto(), {
+          name: 'jinwoo',
+          email: 'test@test.com',
+          password: 'password123',
+        }),
+      );
+      const post = await postsService.create(
+        Object.assign(new CreatePostDto(), {
+          title: '제목',
+          content: '내용',
+          userId: user.id,
+        }),
+      );
+      const updateDto = Object.assign(new UpdatePostDto(), {
+        title: '수정된 제목',
+        content: '수정된 내용',
+        userId: user.id,
+      });
+
+      // when
+      const result = await postsService.update(post.id, updateDto);
+
+      // then
+      expect(result.id).toBe(post.id);
+      expect(result.title).toBe(updateDto.title);
+      expect(result.content).toBe(updateDto.content);
+      expect(result.userId).toBe(user.id);
+    });
+
+    it('존재하지 않는 게시글이면 NotFoundException이 발생한다.', async () => {
+      // given
+      const updateDto = Object.assign(new UpdatePostDto(), {
+        title: '제목',
+        content: '내용',
+        userId: 1,
+      });
+
+      // when & then
+      await expect(postsService.update(-1, updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('작성자가 아닌 유저가 수정하면 ForbiddenException이 발생한다.', async () => {
+      // given
+      const user = await usersService.create(
+        Object.assign(new CreateUserDto(), {
+          name: 'jinwoo',
+          email: 'test@test.com',
+          password: 'password123',
+        }),
+      );
+      const post = await postsService.create(
+        Object.assign(new CreatePostDto(), {
+          title: '제목',
+          content: '내용',
+          userId: user.id,
+        }),
+      );
+      const updateDto = Object.assign(new UpdatePostDto(), {
+        title: '수정된 제목',
+        content: '수정된 내용',
+        userId: user.id + 999,
+      });
+
+      // when & then
+      await expect(postsService.update(post.id, updateDto)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+  });
+
   describe('delete', () => {
     it('게시글을 삭제한다.', async () => {
       // given
@@ -107,9 +184,9 @@ describe('PostsService', () => {
       );
 
       // when & then
-      await expect(
-        postsService.delete(post.id, user.id + 999),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(postsService.delete(post.id, user.id + 999)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 

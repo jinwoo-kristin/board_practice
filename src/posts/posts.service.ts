@@ -9,6 +9,7 @@ import { Transactional } from 'typeorm-transactional';
 import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { PostResponseDto } from './dto/post-response.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
 import { PostListResponseDto } from './dto/posts-list-response.dto';
@@ -42,6 +43,21 @@ export class PostsService {
       skip: (page - 1) * limit,
     });
     return PostListResponseDto.from(posts, total);
+  }
+
+  @Transactional()
+  async update(id: number, dto: UpdatePostDto): Promise<PostResponseDto> {
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    if (!post) throw new NotFoundException('해당 게시글이 존재하지 않습니다.');
+    if (post.user.id !== dto.userId)
+      throw new ForbiddenException('게시글을 수정할 권한이 없습니다.');
+
+    post.update(dto.title, dto.content);
+    const saved = await this.postsRepository.save(post);
+    return PostResponseDto.from(saved);
   }
 
   @Transactional()
