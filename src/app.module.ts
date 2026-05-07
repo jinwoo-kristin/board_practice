@@ -30,6 +30,5 @@ import { PostsModule } from './posts/posts.module';
     UsersModule,
     PostsModule,
   ],
-
 })
 export class AppModule {}

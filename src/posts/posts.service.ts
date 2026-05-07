@@ -18,17 +18,6 @@ export class PostsService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
-    const { page, limit } = query;
-    const [posts, total] = await this.postsRepository.findAndCount({
-      relations: ['user'],
-      order: { created_at: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-    return new PostListResponseDto(posts.map(PostResponseDto.from), total);
-  }
-
   @Transactional()
   async create(dto: CreatePostDto): Promise<PostResponseDto> {
     const user = await this.usersRepository.findOne({
@@ -38,5 +27,16 @@ export class PostsService {
     const post = dto.toEntity(user);
     const saved = await this.postsRepository.save(post);
     return PostResponseDto.from(saved);
+  }
+
+  async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
+    const { page, limit } = query;
+    const [posts, total] = await this.postsRepository.findAndCount({
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+    return new PostListResponseDto(posts.map(PostResponseDto.from), total);
   }
 }

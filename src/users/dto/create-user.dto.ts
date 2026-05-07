@@ -17,7 +17,7 @@ export class CreateUserDto {
     return new User({
       name: this.name,
       email: this.email,
-      password: password,
+      password,
     });
   }
 }
