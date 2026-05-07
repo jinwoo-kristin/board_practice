@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Query } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Query, Param, ParseIntPipe } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
@@ -15,5 +15,13 @@ export class PostsController {
   @Get()
   findAll(@Query() query: PostsQueryDto) {
     return this.postsService.findAll(query);
+  }
+
+  @Delete(':id')
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.postsService.delete(id, userId);
   }
 }

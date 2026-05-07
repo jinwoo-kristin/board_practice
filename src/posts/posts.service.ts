@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
@@ -27,6 +27,18 @@ export class PostsService {
     const post = dto.toEntity(user);
     const saved = await this.postsRepository.save(post);
     return PostResponseDto.from(saved);
+  }
+
+  @Transactional()
+  async delete(id: number, userId: number): Promise<void> {
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    if (!post) throw new NotFoundException('해당 게시글이 존재하지 않습니다.');
+    if (post.user.id !== userId)
+      throw new ForbiddenException('게시글을 삭제할 권한이 없습니다.');
+    await this.postsRepository.delete(id);
   }
 
   async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {

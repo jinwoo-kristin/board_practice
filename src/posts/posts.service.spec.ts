@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { setupTestModule } from '../test-utils/setup-test-module';
 import { PostsService } from './posts.service';
 import { Post } from './post.entity';
@@ -56,6 +56,60 @@ describe('PostsService', () => {
       await expect(postsService.create(postDto)).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('delete', () => {
+    it('게시글을 삭제한다.', async () => {
+      // given
+      const user = await usersService.create(
+        Object.assign(new CreateUserDto(), {
+          name: 'jinwoo',
+          email: 'test@test.com',
+          password: 'password123',
+        }),
+      );
+      const post = await postsService.create(
+        Object.assign(new CreatePostDto(), {
+          title: '제목',
+          content: '내용',
+          userId: user.id,
+        }),
+      );
+
+      // when & then
+      await expect(
+        postsService.delete(post.id, user.id),
+      ).resolves.toBeUndefined();
+    });
+
+    it('존재하지 않는 게시글이면 NotFoundException이 발생한다.', async () => {
+      await expect(postsService.delete(-1, 1)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('작성자가 아닌 유저가 삭제하면 ForbiddenException이 발생한다.', async () => {
+      // given
+      const user = await usersService.create(
+        Object.assign(new CreateUserDto(), {
+          name: 'jinwoo',
+          email: 'test@test.com',
+          password: 'password123',
+        }),
+      );
+      const post = await postsService.create(
+        Object.assign(new CreatePostDto(), {
+          title: '제목',
+          content: '내용',
+          userId: user.id,
+        }),
+      );
+
+      // when & then
+      await expect(
+        postsService.delete(post.id, user.id + 999),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
