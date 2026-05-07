@@ -21,10 +21,10 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 
 ## Phas 1. 데이터베이스 연동
 
-- [ ] SQLLite DB 사용
-- [ ] TypeORM 기반 데이터베이스 연동
+- [x] SQLLite DB 사용
+- [x] TypeORM 기반 데이터베이스 연동
 
-## Phase 2. 구현 기능 목록
+## Phase 2. 기능 구현
 
 ### Entity 설계
 
@@ -54,8 +54,15 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 
 | Method | Endpoint | 설명 |
 |--------|----------|------|
-| POST | /users/signup | 회원가입 |
+| POST | /users | 회원가입 |
 | GET | /users/:id | 유저 단건 조회 |
+
+### 기능 구현 목록
+
+- [x] 유저 생성
+  - [x]  validation
+      - [x]  email / name / password
+  - [x]  password 암호화 후 DB 저장
 
 #### 게시글 (Post)
 
