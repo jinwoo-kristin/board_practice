@@ -27,12 +27,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     exception: BoardException,
     host: ArgumentsHost,
   ): void {
-    const { response, request } = this.getHttpContext(host);
     const status = exception.getStatus();
+    this.createErrorResponse(host, status, exception.message);
+  }
 
-    response.status(status).json({
+   private createErrorResponse(host: ArgumentsHost, status: HttpStatus, message: string | string[]) {
+    const { response, request } = this.getHttpContext(host);
+
+    return response.status(status).json({
       statusCode: status,
-      message: exception.message,
+      message: message,
       timestamp: new Date().toISOString(),
       path: request.url,
     });
@@ -42,15 +46,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     exception: BadRequestException,
     host: ArgumentsHost,
   ): void {
-    const { response, request } = this.getHttpContext(host);
     const message = this.extractValidationMessage(exception);
-
-    response.status(HttpStatus.BAD_REQUEST).json({
-      statusCode: HttpStatus.BAD_REQUEST,
-      message,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+    this.createErrorResponse(host, HttpStatus.BAD_REQUEST, message);
   }
 
   private extractValidationMessage(
@@ -63,15 +60,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     return exception.message;
   }
 
-  private handleUnknown(exception: unknown, host: ArgumentsHost): void {
-    const { response, request } = this.getHttpContext(host);
-    
-    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Internal server error',
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+  private handleUnknown(_exception: unknown, host: ArgumentsHost): void {
+    this.createErrorResponse(host, HttpStatus.INTERNAL_SERVER_ERROR, 'Internal server error');
   }
 
   private getHttpContext(host: ArgumentsHost): {
