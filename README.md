@@ -92,6 +92,11 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
     - [x] title / content string empty 에러 처리
     - [x] post 404 에러 처리
     - [x] user 403 에러 처리
+       
+## Phase 3. 에러 응답 포맷
+- [x] global exception handler 구현
+- [x] custom exception
+- [x] dto 어노테이션 예외처리 따로 구현
 
 ## 실행 방법
 
