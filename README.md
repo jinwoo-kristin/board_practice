@@ -19,7 +19,7 @@ NestJS, TypeScript 학습을 위한 게시판 CRUD 프로젝트
 | Database | SQLite |
 | Testing | Jest, Supertest |
 
-## Phas 1. 데이터베이스 연동
+## Phase 1. 데이터베이스 연동
 
 - [x] SQLLite DB 사용
 - [x] TypeORM 기반 데이터베이스 연동
