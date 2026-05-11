@@ -31,7 +31,7 @@ export class UsersService {
 
   private async findUserById(id: number): Promise<User> {
     const user = await this.usersRepository.findUserById(id);
-    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND);
+    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND());
     return user;
   }
 }

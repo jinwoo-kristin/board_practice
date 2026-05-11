@@ -58,7 +58,7 @@ describe('PostsService', () => {
       // when & then
       await expect(postsService.create(invalidDto)).rejects.toThrow(BoardException);
       await expect(postsService.create(invalidDto)).rejects.toMatchObject({
-        errorCode: ErrorCode.USER_NOT_FOUND,
+        errorCode: ErrorCode.USER_NOT_FOUND(),
       });
     });
   });
@@ -87,7 +87,7 @@ describe('PostsService', () => {
       // when & then
       await expect(postsService.update(-1, updateDto)).rejects.toThrow(BoardException);
       await expect(postsService.update(-1, updateDto)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_NOT_FOUND,
+        errorCode: ErrorCode.POST_NOT_FOUND(),
       });
     });
 
@@ -100,7 +100,7 @@ describe('PostsService', () => {
       // when & then
       await expect(postsService.update(post.id, updateDto)).rejects.toThrow(BoardException);
       await expect(postsService.update(post.id, updateDto)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_FORBIDDEN,
+        errorCode: ErrorCode.POST_FORBIDDEN(),
       });
     });
   });
@@ -118,7 +118,7 @@ describe('PostsService', () => {
     it('존재하지 않는 게시글이면 BoardException(POST_NOT_FOUND)이 발생한다.', async () => {
       await expect(postsService.delete(-1, 1)).rejects.toThrow(BoardException);
       await expect(postsService.delete(-1, 1)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_NOT_FOUND,
+        errorCode: ErrorCode.POST_NOT_FOUND(),
       });
     });
 
@@ -130,7 +130,7 @@ describe('PostsService', () => {
       // when & then
       await expect(postsService.delete(post.id, user.id + 999)).rejects.toThrow(BoardException);
       await expect(postsService.delete(post.id, user.id + 999)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_FORBIDDEN,
+        errorCode: ErrorCode.POST_FORBIDDEN(),
       });
     });
   });

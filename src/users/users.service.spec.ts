@@ -56,7 +56,7 @@ describe('UsersService', () => {
       // when & then
       await expect(service.findUser(-1)).rejects.toThrow(BoardException);
       await expect(service.findUser(-1)).rejects.toMatchObject({
-        errorCode: ErrorCode.USER_NOT_FOUND,
+        errorCode: ErrorCode.USER_NOT_FOUND(),
       });
     });
   });

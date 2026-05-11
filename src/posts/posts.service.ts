@@ -31,7 +31,7 @@ export class PostsService {
 
   private async findUserById(userId: number): Promise<User> {
     const user = await this.usersRepository.findUserById(userId);
-    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND);
+    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND());
     return user;
   }
 
@@ -54,13 +54,13 @@ export class PostsService {
 
   private async findPostById(id: number): Promise<Post> {
     const post = await this.postsRepository.findPostById(id);
-    if (!post) throw new BoardException(ErrorCode.POST_NOT_FOUND);
+    if (!post) throw new BoardException(ErrorCode.POST_NOT_FOUND());
     return post;
   }
 
   private validateUserPost(userId: number, post: Post) {
     if (post.user.id !== userId) {
-      throw new BoardException(ErrorCode.POST_FORBIDDEN);
+      throw new BoardException(ErrorCode.POST_FORBIDDEN());
     }
   }
 

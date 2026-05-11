@@ -1,21 +1,28 @@
 import { HttpStatus } from '@nestjs/common';
 
 export class ErrorCode {
-  static readonly POST_NOT_FOUND = new ErrorCode(
-    HttpStatus.NOT_FOUND,
-    '해당 게시글이 존재하지 않습니다.',
-  );
-  static readonly USER_NOT_FOUND = new ErrorCode(
-    HttpStatus.NOT_FOUND,
-    '해당 유저가 존재하지 않습니다.',
-  );
-  static readonly POST_FORBIDDEN = new ErrorCode(
-    HttpStatus.FORBIDDEN,
-    '게시글에 접근할 권한이 없습니다.',
-  );
+  private static readonly INSTANCE = new ErrorCode();
 
-  private constructor(
-    readonly status: HttpStatus,
-    readonly message: string,
-  ) {}
+  status!: HttpStatus;
+  message!: string;
+
+  private constructor() {}
+
+  static POST_NOT_FOUND(): ErrorCode {
+    ErrorCode.INSTANCE.status = HttpStatus.NOT_FOUND;
+    ErrorCode.INSTANCE.message = '해당 게시글이 존재하지 않습니다.';
+    return ErrorCode.INSTANCE;
+  }
+
+  static USER_NOT_FOUND(): ErrorCode {
+    ErrorCode.INSTANCE.status = HttpStatus.NOT_FOUND;
+    ErrorCode.INSTANCE.message = '해당 유저가 존재하지 않습니다.';
+    return ErrorCode.INSTANCE;
+  }
+
+  static POST_FORBIDDEN(): ErrorCode {
+    ErrorCode.INSTANCE.status = HttpStatus.FORBIDDEN;
+    ErrorCode.INSTANCE.message = '게시글에 접근할 권한이 없습니다.';
+    return ErrorCode.INSTANCE;
+  }
 }
