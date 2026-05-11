@@ -20,8 +20,8 @@ describe('PostsRepository', () => {
     );
   }
 
-  async function createPost(user: User, title = '제목', content = '내용'): Promise<Post> {
-    return repository.save(new Post({ title, content, user }));
+  async function createPost(user: User): Promise<Post> {
+    return repository.save(new Post({ title: '제목', content: '내용', user }));
   }
 
   describe('save', () => {
@@ -44,8 +44,8 @@ describe('PostsRepository', () => {
     it('게시글 목록과 total을 반환한다', async () => {
       // given
       const user = await createUser();
-      await createPost(user, '제목1', '내용1');
-      await createPost(user, '제목2', '내용2');
+      await createPost(user);
+      await createPost(user);
 
       // when
       const [posts, total] = await repository.findAll(1, 10);
@@ -68,7 +68,7 @@ describe('PostsRepository', () => {
       // given
       const user = await createUser();
       for (let i = 0; i < 3; i++) {
-        await createPost(user, `제목${i + 1}`, `내용${i + 1}`);
+        await createPost(user);
       }
 
       // when

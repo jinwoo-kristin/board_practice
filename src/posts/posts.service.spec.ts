@@ -22,43 +22,52 @@ describe('PostsService', () => {
     usersService = getModule().get<UsersService>(UsersService);
   });
 
-  describe('create', () => {
-    it('게시글을 생성한다.', async () => {
-      // given
-      const userDto = Object.assign(new CreateUserDto(), {
+  async function createUser() {
+    return usersService.create(
+      Object.assign(new CreateUserDto(), {
         name: 'jinwoo',
         email: 'test@test.com',
         password: 'password123',
-      });
-      const createdUser = await usersService.create(userDto);
+      }),
+    );
+  }
 
-      const postDto = Object.assign(new CreatePostDto(), {
+  async function createPost(userId: number) {
+    return postsService.create(
+      Object.assign(new CreatePostDto(), {
         title: '제목',
         content: '내용',
-        userId: createdUser.id,
-      });
+        userId,
+      }),
+    );
+  }
+
+  describe('create', () => {
+    it('게시글을 생성한다.', async () => {
+      // given
+      const user = await createUser();
 
       // when
-      const result = await postsService.create(postDto);
+      const result = await createPost(user.id);
 
       // then
       expect(result.id).toBeDefined();
-      expect(result.title).toBe(postDto.title);
-      expect(result.content).toBe(postDto.content);
-      expect(result.userId).toBe(createdUser.id);
+      expect(result.title).toBe('제목');
+      expect(result.content).toBe('내용');
+      expect(result.userId).toBe(user.id);
     });
 
     it('존재하지 않는 userId로 생성하면 BoardException(USER_NOT_FOUND)이 발생한다.', async () => {
       // given
-      const postDto = Object.assign(new CreatePostDto(), {
+      const invalidDto = Object.assign(new CreatePostDto(), {
         title: '제목',
         content: '내용',
         userId: -1,
       });
 
       // when & then
-      await expect(postsService.create(postDto)).rejects.toThrow(BoardException);
-      await expect(postsService.create(postDto)).rejects.toMatchObject({
+      await expect(postsService.create(invalidDto)).rejects.toThrow(BoardException);
+      await expect(postsService.create(invalidDto)).rejects.toMatchObject({
         errorCode: ErrorCode.USER_NOT_FOUND,
       });
     });
@@ -67,20 +76,8 @@ describe('PostsService', () => {
   describe('update', () => {
     it('게시글을 수정한다.', async () => {
       // given
-      const user = await usersService.create(
-        Object.assign(new CreateUserDto(), {
-          name: 'jinwoo',
-          email: 'test@test.com',
-          password: 'password123',
-        }),
-      );
-      const post = await postsService.create(
-        Object.assign(new CreatePostDto(), {
-          title: '제목',
-          content: '내용',
-          userId: user.id,
-        }),
-      );
+      const user = await createUser();
+      const post = await createPost(user.id);
       const updateDto = Object.assign(new UpdatePostDto(), {
         title: '수정된 제목',
         content: '수정된 내용',
@@ -114,24 +111,12 @@ describe('PostsService', () => {
 
     it('작성자가 아닌 유저가 수정하면 BoardException(POST_FORBIDDEN)이 발생한다.', async () => {
       // given
-      const user = await usersService.create(
-        Object.assign(new CreateUserDto(), {
-          name: 'jinwoo',
-          email: 'test@test.com',
-          password: 'password123',
-        }),
-      );
-      const post = await postsService.create(
-        Object.assign(new CreatePostDto(), {
-          title: '제목',
-          content: '내용',
-          userId: user.id,
-        }),
-      );
+      const user = await createUser();
+      const post = await createPost(user.id);
       const updateDto = Object.assign(new UpdatePostDto(), {
         title: '수정된 제목',
         content: '수정된 내용',
-        userId: user.id + 999,
+        userId: -1,
       });
 
       // when & then
@@ -145,25 +130,11 @@ describe('PostsService', () => {
   describe('delete', () => {
     it('게시글을 삭제한다.', async () => {
       // given
-      const user = await usersService.create(
-        Object.assign(new CreateUserDto(), {
-          name: 'jinwoo',
-          email: 'test@test.com',
-          password: 'password123',
-        }),
-      );
-      const post = await postsService.create(
-        Object.assign(new CreatePostDto(), {
-          title: '제목',
-          content: '내용',
-          userId: user.id,
-        }),
-      );
+      const user = await createUser();
+      const post = await createPost(user.id);
 
       // when & then
-      await expect(
-        postsService.delete(post.id, user.id),
-      ).resolves.toBeUndefined();
+      await expect(postsService.delete(post.id, user.id)).resolves.toBeUndefined();
     });
 
     it('존재하지 않는 게시글이면 BoardException(POST_NOT_FOUND)이 발생한다.', async () => {
@@ -175,20 +146,8 @@ describe('PostsService', () => {
 
     it('작성자가 아닌 유저가 삭제하면 BoardException(POST_FORBIDDEN)이 발생한다.', async () => {
       // given
-      const user = await usersService.create(
-        Object.assign(new CreateUserDto(), {
-          name: 'jinwoo',
-          email: 'test@test.com',
-          password: 'password123',
-        }),
-      );
-      const post = await postsService.create(
-        Object.assign(new CreatePostDto(), {
-          title: '제목',
-          content: '내용',
-          userId: user.id,
-        }),
-      );
+      const user = await createUser();
+      const post = await createPost(user.id);
 
       // when & then
       await expect(postsService.delete(post.id, user.id + 999)).rejects.toThrow(BoardException);
@@ -201,23 +160,10 @@ describe('PostsService', () => {
   describe('findAll', () => {
     it('게시글 목록과 전체 개수를 반환한다', async () => {
       // given
-      const userDto = Object.assign(new CreateUserDto(), {
-        name: 'jinwoo',
-        email: 'test@test.com',
-        password: 'password123',
-      });
-      const createdUser = await usersService.create(userDto);
-
+      const user = await createUser();
       for (let i = 0; i < 3; i++) {
-        await postsService.create(
-          Object.assign(new CreatePostDto(), {
-            title: `제목${i + 1}`,
-            content: `내용${i + 1}`,
-            userId: createdUser.id,
-          }),
-        );
+        await createPost(user.id);
       }
-
       const query = Object.assign(new PostsQueryDto(), { page: 1, limit: 2 });
 
       // when

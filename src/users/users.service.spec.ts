@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
+import { UserResponseDto } from './dto/user-response.dto';
 
 describe('UsersService', () => {
   const getModule = setupTestModule([User], [UsersService, UsersRepository]);
@@ -14,10 +15,20 @@ describe('UsersService', () => {
     service = getModule().get<UsersService>(UsersService);
   });
 
+  async function createUser(): Promise<UserResponseDto> {
+    return service.create(
+      Object.assign(new CreateUserDto(), {
+        name: 'jinwoo',
+        email: 'test@test.com',
+        password: 'password123',
+      })
+    );
+  }
+
   describe('create', () => {
     it('유저를 생성한다.', async () => {
       // given
-      const dto = Object.assign(new CreateUserDto(), {
+      const dto =  Object.assign(new CreateUserDto(), {
         name: 'jinwoo',
         email: 'test@test.com',
         password: 'password123',
@@ -25,7 +36,6 @@ describe('UsersService', () => {
 
       // when
       const result = await service.create(dto);
-
       // then
       expect(result.id).toBeDefined();
       expect(result.name).toBe(dto.name);
@@ -36,20 +46,15 @@ describe('UsersService', () => {
   describe('findUser', () => {
     it('존재하는 id로 조회하면 UserResponseDto가 반환된다', async () => {
       // given
-      const dto = Object.assign(new CreateUserDto(), {
-        name: 'jinwoo',
-        email: 'test@test.com',
-        password: 'password123',
-      });
-      const created = await service.create(dto);
+      const user = await createUser();
 
       // when
-      const result = await service.findUser(created.id);
+      const result = await service.findUser(user.id);
 
       // then
-      expect(result.id).toBe(created.id);
-      expect(result.name).toBe(dto.name);
-      expect(result.email).toBe(dto.email);
+      expect(result.id).toBe(user.id);
+      expect(result.name).toBe(user.name);
+      expect(result.email).toBe(user.email);
     });
 
     it('존재하지 않는 id로 조회하면 BoardException(USER_NOT_FOUND)이 발생한다', async () => {

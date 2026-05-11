@@ -5,17 +5,15 @@ import { User } from './user.entity';
 describe('UsersRepository', () => {
   const getModule = setupTestModule([User], [UsersRepository]);
   let repository: UsersRepository;
-
+  const user = new User({ name: 'jinwoo', email: 'test@test.com', password: 'pw' });
+  
   beforeAll(() => {
     repository = getModule().get<UsersRepository>(UsersRepository);
   });
 
   describe('save', () => {
     it('User를 저장하면 id가 부여된 User가 반환된다', async () => {
-      // given
-      const user = new User({ name: 'jinwoo', email: 'test@test.com', password: 'pw' });
-
-      // when
+      // given & when
       const result = await repository.save(user);
 
       // then
@@ -28,9 +26,7 @@ describe('UsersRepository', () => {
   describe('findUserById', () => {
     it('존재하는 id로 조회하면 User가 반환된다', async () => {
       // given
-      const saved = await repository.save(
-        new User({ name: 'jinwoo', email: 'test@test.com', password: 'pw' }),
-      );
+      const saved = await repository.save(user);
 
       // when
       const result = await repository.findUserById(saved.id);
