@@ -43,7 +43,9 @@ export class PostsService {
     const post = await this.findPostById(id);
     this.validateUserPost(dto.userId, post);
 
-    post.update(dto.title, dto.content);
+    const { title, content } = dto;
+    post.update({ title, content });
+    
     const saved = await this.postsRepository.save(post);
     return PostResponseDto.from(saved);
   }

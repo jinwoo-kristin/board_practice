@@ -21,7 +21,7 @@ export class Post extends BaseTimeEntity {
   @ManyToOne(() => User)
   user!: User;
 
-  update(title: string, content: string): void {
+  update({ title, content }: { title: string; content: string }): void {
     this.title = title;
     this.content = content;
   }
