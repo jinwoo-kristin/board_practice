@@ -7,10 +7,6 @@ import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
 import { UserMapper } from '../users/user.mapper';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { PostsQueryDto } from './dto/posts-query.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
 
@@ -25,23 +21,19 @@ describe('PostsService', () => {
   });
 
   async function createUser() {
-    return usersService.create(
-      Object.assign(new CreateUserDto(), {
-        name: 'jinwoo',
-        email: 'test@test.com',
-        password: 'password123',
-      }),
-    );
+    return usersService.create({
+      name: 'jinwoo',
+      email: 'test@test.com',
+      password: 'password123',
+    });
   }
 
   async function createPost(userId: number) {
-    return postsService.create(
-      Object.assign(new CreatePostDto(), {
-        title: '제목',
-        content: '내용',
-        userId,
-      }),
-    );
+    return postsService.create({
+      title: '제목',
+      content: '내용',
+      userId,
+    });
   }
 
   describe('create', () => {
@@ -61,11 +53,7 @@ describe('PostsService', () => {
 
     it('존재하지 않는 userId로 생성하면 BoardException(USER_NOT_FOUND)이 발생한다.', async () => {
       // given
-      const invalidDto = Object.assign(new CreatePostDto(), {
-        title: '제목',
-        content: '내용',
-        userId: -1,
-      });
+      const invalidDto = { title: '제목', content: '내용', userId: -1 };
 
       // when & then
       await expect(postsService.create(invalidDto)).rejects.toThrow(BoardException);
@@ -80,11 +68,7 @@ describe('PostsService', () => {
       // given
       const user = await createUser();
       const post = await createPost(user.id);
-      const updateDto = Object.assign(new UpdatePostDto(), {
-        title: '수정된 제목',
-        content: '수정된 내용',
-        userId: user.id,
-      });
+      const updateDto = { title: '수정된 제목', content: '수정된 내용', userId: user.id };
 
       // when
       const result = await postsService.update(post.id, updateDto);
@@ -98,11 +82,7 @@ describe('PostsService', () => {
 
     it('존재하지 않는 게시글이면 BoardException(POST_NOT_FOUND)이 발생한다.', async () => {
       // given
-      const updateDto = Object.assign(new UpdatePostDto(), {
-        title: '제목',
-        content: '내용',
-        userId: 1,
-      });
+      const updateDto = { title: '제목', content: '내용', userId: 1 };
 
       // when & then
       await expect(postsService.update(-1, updateDto)).rejects.toThrow(BoardException);
@@ -115,11 +95,7 @@ describe('PostsService', () => {
       // given
       const user = await createUser();
       const post = await createPost(user.id);
-      const updateDto = Object.assign(new UpdatePostDto(), {
-        title: '수정된 제목',
-        content: '수정된 내용',
-        userId: -1,
-      });
+      const updateDto = { title: '수정된 제목', content: '수정된 내용', userId: -1 };
 
       // when & then
       await expect(postsService.update(post.id, updateDto)).rejects.toThrow(BoardException);
@@ -166,7 +142,7 @@ describe('PostsService', () => {
       for (let i = 0; i < 3; i++) {
         await createPost(user.id);
       }
-      const query = Object.assign(new PostsQueryDto(), { page: 1, limit: 2 });
+      const query = { page: 1, limit: 2 };
 
       // when
       const result = await postsService.findAll(query);
@@ -178,7 +154,7 @@ describe('PostsService', () => {
 
     it('게시글이 없으면 빈 배열과 total 0을 반환한다', async () => {
       // given
-      const query = Object.assign(new PostsQueryDto(), { page: 1, limit: 10 });
+      const query = { page: 1, limit: 10 };
 
       // when
       const result = await postsService.findAll(query);

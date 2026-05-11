@@ -3,7 +3,6 @@ import { UsersService } from './users.service';
 import { UsersRepository } from './users.repository';
 import { UserMapper } from './user.mapper';
 import { User } from './user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -17,23 +16,18 @@ describe('UsersService', () => {
   });
 
   async function createUser(): Promise<UserResponseDto> {
-    return service.create(
-      Object.assign(new CreateUserDto(), {
+    return service.create({
         name: 'jinwoo',
         email: 'test@test.com',
         password: 'password123',
-      })
+      }
     );
   }
 
   describe('create', () => {
     it('유저를 생성한다.', async () => {
       // given
-      const dto =  Object.assign(new CreateUserDto(), {
-        name: 'jinwoo',
-        email: 'test@test.com',
-        password: 'password123',
-      });
+      const dto = { name: 'jinwoo', email: 'test@test.com', password: 'password123' };
 
       // when
       const result = await service.create(dto);
