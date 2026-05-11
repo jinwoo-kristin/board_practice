@@ -6,16 +6,16 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: '이름' })
-  name: string;
+  name!: string;
 
   @IsEmail()
   @ApiProperty({ description: '이메일' })
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: '비밀번호' })
-  password: string;
+  password!: string;
 
   toEntity(password: string): User {
     return new User({

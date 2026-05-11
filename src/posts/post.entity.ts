@@ -10,16 +10,16 @@ export class Post extends BaseTimeEntity {
   }
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column()
-  content: string;
+  content!: string;
 
   @ManyToOne(() => User)
-  user: User;
+  user!: User;
 
   update(title: string, content: string): void {
     this.title = title;
