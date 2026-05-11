@@ -1,10 +1,12 @@
 import { setupTestModule } from '../test-utils/setup-test-module';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
+import { PostMapper } from './post.mapper';
 import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
+import { UserMapper } from '../users/user.mapper';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
@@ -13,7 +15,7 @@ import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
 
 describe('PostsService', () => {
-  const getModule = setupTestModule([User, Post], [PostsService, PostsRepository, UsersService, UsersRepository]);
+  const getModule = setupTestModule([User, Post], [PostsService, PostsRepository, PostMapper, UsersService, UsersRepository, UserMapper]);
   let postsService: PostsService;
   let usersService: UsersService;
 

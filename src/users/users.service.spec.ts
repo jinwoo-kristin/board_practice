@@ -1,6 +1,7 @@
 import { setupTestModule } from '../test-utils/setup-test-module';
 import { UsersService } from './users.service';
 import { UsersRepository } from './users.repository';
+import { UserMapper } from './user.mapper';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { BoardException } from '../common/exceptions/board.exception';
@@ -8,7 +9,7 @@ import { ErrorCode } from '../common/exceptions/error-code';
 import { UserResponseDto } from './dto/user-response.dto';
 
 describe('UsersService', () => {
-  const getModule = setupTestModule([User], [UsersService, UsersRepository]);
+  const getModule = setupTestModule([User], [UsersService, UsersRepository, UserMapper]);
   let service: UsersService;
 
   beforeAll(() => {

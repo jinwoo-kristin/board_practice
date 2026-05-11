@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Post } from '../post.entity';
 
 export class PostResponseDto {
   @ApiProperty({ description: '게시글 ID' })
@@ -20,7 +19,7 @@ export class PostResponseDto {
   @ApiProperty({ description: '수정일' })
   readonly updated_at: Date;
 
-  private constructor(
+  constructor(
     id: number,
     title: string,
     content: string,
@@ -34,16 +33,5 @@ export class PostResponseDto {
     this.userId = userId;
     this.created_at = created_at;
     this.updated_at = updated_at;
-  }
-
-  static from(post: Post): PostResponseDto {
-    return new PostResponseDto(
-      post.id,
-      post.title,
-      post.content,
-      post.user.id,
-      post.created_at,
-      post.updated_at,
-    );
   }
 }

@@ -4,11 +4,12 @@ import { Post } from './post.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
+import { PostMapper } from './post.mapper';
 import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Post]), UsersModule],
   controllers: [PostsController],
-  providers: [PostsService, PostsRepository],
+  providers: [PostsService, PostsRepository, PostMapper],
 })
 export class PostsModule {}

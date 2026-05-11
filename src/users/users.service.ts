@@ -7,22 +7,26 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
+import { UserMapper } from './user.mapper';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly userMapper: UserMapper,
+  ) {}
 
   @Transactional()
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = dto.toEntity(hashedPassword);
+    const user = this.userMapper.toEntity(dto, hashedPassword);
     const saved = await this.usersRepository.save(user);
-    return UserResponseDto.from(saved);
+    return this.userMapper.toResponse(saved);
   }
 
   async findUser(id: number): Promise<UserResponseDto> {
     const user = await this.findUserById(id);
-    return UserResponseDto.from(user);
+    return this.userMapper.toResponse(user);
   }
 
   private async findUserById(id: number): Promise<User> {

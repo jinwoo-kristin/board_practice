@@ -11,20 +11,22 @@ import { PostsQueryDto } from './dto/posts-query.dto';
 import { PostListResponseDto } from './dto/posts-list-response.dto';
 import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
+import { PostMapper } from './post.mapper';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly postsRepository: PostsRepository,
     private readonly usersRepository: UsersRepository,
+    private readonly postMapper: PostMapper,
   ) {}
 
   @Transactional()
   async create(dto: CreatePostDto): Promise<PostResponseDto> {
     const user = await this.findUserById(dto.userId);
-    const post = dto.toEntity(user);
+    const post = this.postMapper.toEntity(dto, user);
     const saved = await this.postsRepository.save(post);
-    return PostResponseDto.from(saved);
+    return this.postMapper.toResponse(saved);
   }
 
   private async findUserById(userId: number): Promise<User> {
@@ -35,7 +37,7 @@ export class PostsService {
 
   async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
     const [posts, total] = await this.postsRepository.findAll(query.page, query.limit);
-    return PostListResponseDto.from(posts, total);
+    return this.postMapper.toListResponse(posts, total);
   }
 
   @Transactional()
@@ -45,9 +47,9 @@ export class PostsService {
 
     const { title, content } = dto;
     post.update({ title, content });
-    
+
     const saved = await this.postsRepository.save(post);
-    return PostResponseDto.from(saved);
+    return this.postMapper.toResponse(saved);
   }
 
   private async findPostById(id: number): Promise<Post> {
