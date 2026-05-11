@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Transactional } from 'typeorm-transactional';
 import { User } from './user.entity';
+import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { BoardException } from '../common/exceptions/board.exception';
@@ -11,10 +10,7 @@ import { ErrorCode } from '../common/exceptions/error-code';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   @Transactional()
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
@@ -24,13 +20,13 @@ export class UsersService {
     return UserResponseDto.from(saved);
   }
 
-  async findOne(id: number): Promise<UserResponseDto> {
-    const user = await this.findUser(id);
+  async findUser(id: number): Promise<UserResponseDto> {
+    const user = await this.findUserById(id);
     return UserResponseDto.from(user);
   }
 
-  private async findUser(id:number): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+  private async findUserById(id: number): Promise<User> {
+    const user = await this.usersRepository.findUserById(id);
     if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND);
     return user;
   }

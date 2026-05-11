@@ -1,8 +1,10 @@
 import { setupTestModule } from '../test-utils/setup-test-module';
 import { PostsService } from './posts.service';
+import { PostsRepository } from './posts.repository';
 import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
+import { UsersRepository } from '../users/users.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
@@ -11,7 +13,7 @@ import { BoardException } from '../common/exceptions/board.exception';
 import { ErrorCode } from '../common/exceptions/error-code';
 
 describe('PostsService', () => {
-  const getModule = setupTestModule([User, Post], [PostsService, UsersService]);
+  const getModule = setupTestModule([User, Post], [PostsService, PostsRepository, UsersService, UsersRepository]);
   let postsService: PostsService;
   let usersService: UsersService;
 
@@ -206,11 +208,11 @@ describe('PostsService', () => {
       });
       const createdUser = await usersService.create(userDto);
 
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 0; i < 3; i++) {
         await postsService.create(
           Object.assign(new CreatePostDto(), {
-            title: `제목${i}`,
-            content: `내용${i}`,
+            title: `제목${i + 1}`,
+            content: `내용${i + 1}`,
             userId: createdUser.id,
           }),
         );
