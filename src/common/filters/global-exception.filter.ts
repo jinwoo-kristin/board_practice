@@ -10,7 +10,6 @@ import { BoardException } from '../exceptions/board.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-
   catch(exception: unknown, host: ArgumentsHost): void {
     if (exception instanceof BoardException) {
       this.handleBoardException(exception, host);
@@ -31,12 +30,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     this.createErrorResponse(host, status, exception.message);
   }
 
-   private createErrorResponse(host: ArgumentsHost, status: HttpStatus, message: string | string[]) {
+  private createErrorResponse(
+    host: ArgumentsHost,
+    status: HttpStatus,
+    message: string | string[],
+  ): Response {
     const { response, request } = this.getHttpContext(host);
 
     return response.status(status).json({
       statusCode: status,
-      message: message,
+      message,
       timestamp: new Date().toISOString(),
       path: request.url,
     });
@@ -53,15 +56,25 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private extractValidationMessage(
     exception: BadRequestException,
   ): string | string[] {
-    const res = exception.getResponse();
-    if (typeof res === 'object' && res !== null && 'message' in res) {
-      return (res as { message: string | string[] }).message;
+    const response = exception.getResponse();
+    if (this.hasValidationMessage(response)) {
+      return (response as { message: string | string[] }).message;
     }
     return exception.message;
   }
 
+  private hasValidationMessage(response: string | object): boolean {
+    return (
+      typeof response === 'object' && response !== null && 'message' in response
+    );
+  }
+
   private handleUnknown(_exception: unknown, host: ArgumentsHost): void {
-    this.createErrorResponse(host, HttpStatus.INTERNAL_SERVER_ERROR, 'Internal server error');
+    this.createErrorResponse(
+      host,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      'Internal server error',
+    );
   }
 
   private getHttpContext(host: ArgumentsHost): {

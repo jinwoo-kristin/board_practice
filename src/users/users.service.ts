@@ -1,37 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Transactional } from 'typeorm-transactional';
 import { User } from './user.entity';
+import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { BoardException } from '../common/exceptions/board.exception';
-import { ErrorCode } from '../common/exceptions/error-code';
+import { USER_NOT_FOUND } from '../common/exceptions/error-definitions';
+import { UserMapper } from './user.mapper';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly usersRepository: UsersRepository,
+    private readonly userMapper: UserMapper,
   ) {}
 
   @Transactional()
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = dto.toEntity(hashedPassword);
+    const user = this.userMapper.toEntity(dto, hashedPassword);
     const saved = await this.usersRepository.save(user);
-    return UserResponseDto.from(saved);
+    return this.userMapper.toResponse(saved);
   }
 
-  async findOne(id: number): Promise<UserResponseDto> {
-    const user = await this.findUser(id);
-    return UserResponseDto.from(user);
+  async findUser(id: number): Promise<UserResponseDto> {
+    const user = await this.findUserById(id);
+    return this.userMapper.toResponse(user);
   }
 
-  private async findUser(id:number): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND);
+  private async findUserById(id: number): Promise<User> {
+    const user = await this.usersRepository.findUserById(id);
+    if (!user) throw new BoardException(USER_NOT_FOUND);
     return user;
   }
 }

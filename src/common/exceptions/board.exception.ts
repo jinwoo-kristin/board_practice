@@ -1,8 +1,8 @@
 import { HttpException } from '@nestjs/common';
-import { ErrorCode } from './error-code';
+import { ErrorDefinition } from './error-definitions';
 
 export class BoardException extends HttpException {
-  constructor(readonly errorCode: ErrorCode) {
-    super(errorCode.message, errorCode.status);
+  constructor(readonly error: ErrorDefinition) {
+    super({ code: error.code, message: error.message }, error.status);
   }
 }

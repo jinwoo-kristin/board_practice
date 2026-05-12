@@ -5,14 +5,14 @@ export class UpdatePostDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: '제목' })
-  title: string;
+  title!: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: '내용' })
-  content: string;
+  content!: string;
 
   @IsInt()
   @ApiProperty({ description: '작성자 ID' })
-  userId: number;
+  userId!: number;
 }
