@@ -5,8 +5,12 @@ import { User } from './user.entity';
 describe('UsersRepository', () => {
   const getModule = setupTestModule([User], [UsersRepository]);
   let repository: UsersRepository;
-  const user = new User({ name: 'jinwoo', email: 'test@test.com', password: 'pw' });
-  
+  const user = new User({
+    name: 'jinwoo',
+    email: 'test@test.com',
+    password: 'pw',
+  });
+
   beforeAll(() => {
     repository = getModule().get<UsersRepository>(UsersRepository);
   });

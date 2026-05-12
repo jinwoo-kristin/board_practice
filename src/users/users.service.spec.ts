@@ -4,11 +4,14 @@ import { UsersRepository } from './users.repository';
 import { UserMapper } from './user.mapper';
 import { User } from './user.entity';
 import { BoardException } from '../common/exceptions/board.exception';
-import { ErrorCode } from '../common/exceptions/error-code';
+import { USER_NOT_FOUND } from '../common/exceptions/error-definitions';
 import { UserResponseDto } from './dto/user-response.dto';
 
 describe('UsersService', () => {
-  const getModule = setupTestModule([User], [UsersService, UsersRepository, UserMapper]);
+  const getModule = setupTestModule(
+    [User],
+    [UsersService, UsersRepository, UserMapper],
+  );
   let service: UsersService;
 
   beforeAll(() => {
@@ -17,17 +20,20 @@ describe('UsersService', () => {
 
   async function createUser(): Promise<UserResponseDto> {
     return service.create({
-        name: 'jinwoo',
-        email: 'test@test.com',
-        password: 'password123',
-      }
-    );
+      name: 'jinwoo',
+      email: 'test@test.com',
+      password: 'password123',
+    });
   }
 
   describe('create', () => {
     it('유저를 생성한다.', async () => {
       // given
-      const dto = { name: 'jinwoo', email: 'test@test.com', password: 'password123' };
+      const dto = {
+        name: 'jinwoo',
+        email: 'test@test.com',
+        password: 'password123',
+      };
 
       // when
       const result = await service.create(dto);
@@ -56,7 +62,7 @@ describe('UsersService', () => {
       // when & then
       await expect(service.findUser(-1)).rejects.toThrow(BoardException);
       await expect(service.findUser(-1)).rejects.toMatchObject({
-        errorCode: ErrorCode.USER_NOT_FOUND(),
+        error: USER_NOT_FOUND,
       });
     });
   });

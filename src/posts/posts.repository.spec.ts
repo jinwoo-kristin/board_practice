@@ -5,7 +5,10 @@ import { UsersRepository } from '../users/users.repository';
 import { User } from '../users/user.entity';
 
 describe('PostsRepository', () => {
-  const getModule = setupTestModule([User, Post], [UsersRepository, PostsRepository]);
+  const getModule = setupTestModule(
+    [User, Post],
+    [UsersRepository, PostsRepository],
+  );
   let repository: PostsRepository;
   let usersRepository: UsersRepository;
 

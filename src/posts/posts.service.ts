@@ -10,7 +10,11 @@ import { PostResponseDto } from './dto/post-response.dto';
 import { PostsQueryDto } from './dto/posts-query.dto';
 import { PostListResponseDto } from './dto/posts-list-response.dto';
 import { BoardException } from '../common/exceptions/board.exception';
-import { ErrorCode } from '../common/exceptions/error-code';
+import {
+  POST_FORBIDDEN,
+  POST_NOT_FOUND,
+  USER_NOT_FOUND,
+} from '../common/exceptions/error-definitions';
 import { PostMapper } from './post.mapper';
 
 @Injectable()
@@ -31,12 +35,15 @@ export class PostsService {
 
   private async findUserById(userId: number): Promise<User> {
     const user = await this.usersRepository.findUserById(userId);
-    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND());
+    if (!user) throw new BoardException(USER_NOT_FOUND);
     return user;
   }
 
   async findAll(query: PostsQueryDto): Promise<PostListResponseDto> {
-    const [posts, total] = await this.postsRepository.findAll(query.page, query.limit);
+    const [posts, total] = await this.postsRepository.findAll(
+      query.page,
+      query.limit,
+    );
     return this.postMapper.toListResponse(posts, total);
   }
 
@@ -54,13 +61,13 @@ export class PostsService {
 
   private async findPostById(id: number): Promise<Post> {
     const post = await this.postsRepository.findPostById(id);
-    if (!post) throw new BoardException(ErrorCode.POST_NOT_FOUND());
+    if (!post) throw new BoardException(POST_NOT_FOUND);
     return post;
   }
 
   private validateUserPost(userId: number, post: Post) {
     if (post.user.id !== userId) {
-      throw new BoardException(ErrorCode.POST_FORBIDDEN());
+      throw new BoardException(POST_FORBIDDEN);
     }
   }
 

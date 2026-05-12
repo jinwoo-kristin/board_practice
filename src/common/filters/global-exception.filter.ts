@@ -10,7 +10,6 @@ import { BoardException } from '../exceptions/board.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-
   catch(exception: unknown, host: ArgumentsHost): void {
     if (exception instanceof BoardException) {
       this.handleBoardException(exception, host);
@@ -64,18 +63,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     return exception.message;
   }
 
-  private hasValidationMessage(
-  response: string | object,
-  ): boolean {
-  return (
-    typeof response === 'object' &&
-    response !== null &&
-    'message' in response
-  );
+  private hasValidationMessage(response: string | object): boolean {
+    return (
+      typeof response === 'object' && response !== null && 'message' in response
+    );
   }
 
   private handleUnknown(_exception: unknown, host: ArgumentsHost): void {
-    this.createErrorResponse(host, HttpStatus.INTERNAL_SERVER_ERROR, 'Internal server error');
+    this.createErrorResponse(
+      host,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      'Internal server error',
+    );
   }
 
   private getHttpContext(host: ArgumentsHost): {

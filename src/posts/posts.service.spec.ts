@@ -8,10 +8,24 @@ import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
 import { UserMapper } from '../users/user.mapper';
 import { BoardException } from '../common/exceptions/board.exception';
-import { ErrorCode } from '../common/exceptions/error-code';
+import {
+  POST_FORBIDDEN,
+  POST_NOT_FOUND,
+  USER_NOT_FOUND,
+} from '../common/exceptions/error-definitions';
 
 describe('PostsService', () => {
-  const getModule = setupTestModule([User, Post], [PostsService, PostsRepository, PostMapper, UsersService, UsersRepository, UserMapper]);
+  const getModule = setupTestModule(
+    [User, Post],
+    [
+      PostsService,
+      PostsRepository,
+      PostMapper,
+      UsersService,
+      UsersRepository,
+      UserMapper,
+    ],
+  );
   let postsService: PostsService;
   let usersService: UsersService;
 
@@ -56,9 +70,11 @@ describe('PostsService', () => {
       const invalidDto = { title: '제목', content: '내용', userId: -1 };
 
       // when & then
-      await expect(postsService.create(invalidDto)).rejects.toThrow(BoardException);
+      await expect(postsService.create(invalidDto)).rejects.toThrow(
+        BoardException,
+      );
       await expect(postsService.create(invalidDto)).rejects.toMatchObject({
-        errorCode: ErrorCode.USER_NOT_FOUND(),
+        error: USER_NOT_FOUND,
       });
     });
   });
@@ -68,7 +84,11 @@ describe('PostsService', () => {
       // given
       const user = await createUser();
       const post = await createPost(user.id);
-      const updateDto = { title: '수정된 제목', content: '수정된 내용', userId: user.id };
+      const updateDto = {
+        title: '수정된 제목',
+        content: '수정된 내용',
+        userId: user.id,
+      };
 
       // when
       const result = await postsService.update(post.id, updateDto);
@@ -85,9 +105,11 @@ describe('PostsService', () => {
       const updateDto = { title: '제목', content: '내용', userId: 1 };
 
       // when & then
-      await expect(postsService.update(-1, updateDto)).rejects.toThrow(BoardException);
+      await expect(postsService.update(-1, updateDto)).rejects.toThrow(
+        BoardException,
+      );
       await expect(postsService.update(-1, updateDto)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_NOT_FOUND(),
+        error: POST_NOT_FOUND,
       });
     });
 
@@ -95,12 +117,20 @@ describe('PostsService', () => {
       // given
       const user = await createUser();
       const post = await createPost(user.id);
-      const updateDto = { title: '수정된 제목', content: '수정된 내용', userId: -1 };
+      const updateDto = {
+        title: '수정된 제목',
+        content: '수정된 내용',
+        userId: -1,
+      };
 
       // when & then
-      await expect(postsService.update(post.id, updateDto)).rejects.toThrow(BoardException);
-      await expect(postsService.update(post.id, updateDto)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_FORBIDDEN(),
+      await expect(postsService.update(post.id, updateDto)).rejects.toThrow(
+        BoardException,
+      );
+      await expect(
+        postsService.update(post.id, updateDto),
+      ).rejects.toMatchObject({
+        error: POST_FORBIDDEN,
       });
     });
   });
@@ -112,13 +142,15 @@ describe('PostsService', () => {
       const post = await createPost(user.id);
 
       // when & then
-      await expect(postsService.delete(post.id, user.id)).resolves.toBeUndefined();
+      await expect(
+        postsService.delete(post.id, user.id),
+      ).resolves.toBeUndefined();
     });
 
     it('존재하지 않는 게시글이면 BoardException(POST_NOT_FOUND)이 발생한다.', async () => {
       await expect(postsService.delete(-1, 1)).rejects.toThrow(BoardException);
       await expect(postsService.delete(-1, 1)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_NOT_FOUND(),
+        error: POST_NOT_FOUND,
       });
     });
 
@@ -128,9 +160,13 @@ describe('PostsService', () => {
       const post = await createPost(user.id);
 
       // when & then
-      await expect(postsService.delete(post.id, user.id + 999)).rejects.toThrow(BoardException);
-      await expect(postsService.delete(post.id, user.id + 999)).rejects.toMatchObject({
-        errorCode: ErrorCode.POST_FORBIDDEN(),
+      await expect(postsService.delete(post.id, user.id + 999)).rejects.toThrow(
+        BoardException,
+      );
+      await expect(
+        postsService.delete(post.id, user.id + 999),
+      ).rejects.toMatchObject({
+        error: POST_FORBIDDEN,
       });
     });
   });

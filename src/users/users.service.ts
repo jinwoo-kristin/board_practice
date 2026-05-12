@@ -6,7 +6,7 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { BoardException } from '../common/exceptions/board.exception';
-import { ErrorCode } from '../common/exceptions/error-code';
+import { USER_NOT_FOUND } from '../common/exceptions/error-definitions';
 import { UserMapper } from './user.mapper';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class UsersService {
 
   private async findUserById(id: number): Promise<User> {
     const user = await this.usersRepository.findUserById(id);
-    if (!user) throw new BoardException(ErrorCode.USER_NOT_FOUND());
+    if (!user) throw new BoardException(USER_NOT_FOUND);
     return user;
   }
 }

@@ -12,10 +12,20 @@ export class PostMapper {
   }
 
   toResponse(post: Post): PostResponseDto {
-    return new PostResponseDto(post.id, post.title, post.content, post.user.id, post.created_at, post.updated_at);
+    return new PostResponseDto(
+      post.id,
+      post.title,
+      post.content,
+      post.user.id,
+      post.created_at,
+      post.updated_at,
+    );
   }
 
   toListResponse(posts: Post[], total: number): PostListResponseDto {
-    return new PostListResponseDto(posts.map((p) => this.toResponse(p)), total);
+    return new PostListResponseDto(
+      posts.map((p) => this.toResponse(p)),
+      total,
+    );
   }
 }
